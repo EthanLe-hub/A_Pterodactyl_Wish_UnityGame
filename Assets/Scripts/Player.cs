@@ -11,21 +11,32 @@ public class Player : MonoBehaviour
     public float horizontalSpeed = 3f;
     public float flySpeed = 3f;
     public float fallSpeed = 3f;
+    public float flapSpeed = 0.2f; // Time between upward frames. 
 
     private Vector2 moveDirection;
     private Rigidbody2D rb;
+    private SpriteRenderer sr; 
+    private Animator anim; 
     private bool isFacingLeft = false;
     private bool isGrounded = false; 
-    private SpriteRenderer sr; 
+    private float flapTimer = 0f; 
+    private bool useFirstFrame = true; 
 
-    // Assign upward and downward sprites via Unity Inspector: 
-    public Sprite upwardSprite;
-    public Sprite downwardSprite; 
+    // Assign upward animation (alternates between upward sprite and downward sprite) and downward sprite via Unity Inspector: 
+    public Sprite upwardFrame1;
+    public Sprite upwardFrame2; 
+    public Sprite downwardSprite;  
 
     void Start()
     {
         sr = GetComponent<SpriteRenderer>(); // Grab the SpriteRenderer component of the player (visual image). 
         rb = GetComponent<Rigidbody2D>(); // Grab the Rigidbody2D component of the player (the player is a Rigidbody2D, and we move this).
+        anim = GetComponent<Animator>(); // Grab the Animator component of the player (renders idle animation). 
+    }
+
+    void Update()
+    {
+        anim.SetBool("isGrounded", isGrounded); // Set the idle animation playing to be true only if the player is on a safe floor. 
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -72,6 +83,8 @@ public class Player : MonoBehaviour
 
     void FixedUpdate() // FixedUpdate is called at a fixed framerate.
     {
+        anim.enabled = false; // Assume player is not on safe floor every frame. 
+
         float xVelocity; // Tracks horizontal speed. 
         float yVelocity; // Tracks vertical speed. 
 
@@ -88,23 +101,36 @@ public class Player : MonoBehaviour
         // Vertical movement
         if (moveDirection.y > 0) // If UP pressed,
         {
-            sr.sprite = upwardSprite; // Change the player sprite (on the SpriteRenderer component) to show upward frame. 
+            flapTimer += Time.deltaTime; // Increment the flapTimer constantly. 
+
+            if (flapTimer >= flapSpeed) // Once the flapTimer has reached 0.5 seconds (same as or greater than flapSpeed),
+            {
+                flapTimer = 0f; // reset flapTimer back to 0 seconds (so we can reuse this loop).
+                useFirstFrame = !useFirstFrame; // Flip the flag (no matter what it is set as): true -> false, false -> true.  
+            }
+
+            sr.sprite = useFirstFrame ? upwardFrame1 : upwardFrame2; // Change the player sprite (on the SpriteRenderer component) to show next upward frame in the animation. 
             isGrounded = false; // Always set flag to false for whenever player may be on a safe floor and wants to get up.
             yVelocity = flySpeed; // move player up. 
         }
         else if (moveDirection.y < 0) // If DOWN pressed,
         {
+            flapTimer = 0f; // Reset flapTimer back to 0 seconds (so we can reuse UP animation loop cleanly). 
+            useFirstFrame = true; // Reset flag back to true to reuse UP animation loop cleanly. 
             sr.sprite = downwardSprite; // Change the player sprite (on the SpriteRenderer component) to show downward frame. 
             yVelocity = -fallSpeed; // move player down. 
         }
         else // If UP released, 
         {
+            flapTimer = 0f; // Reset flapTimer back to 0 seconds (so we can reuse UP animation loop cleanly). 
+            useFirstFrame = true; // Reset flag back to true to reuse UP animation loop cleanly. 
             sr.sprite = downwardSprite; // Change the player sprite to show downward frame. 
             yVelocity = -fallSpeed; // again, move player down (same as if DOWN pressed). 
         }
 
         if (isGrounded) // If player is on a safe floor, 
         {
+            anim.enabled = true; // Use Animator component when player is on safe floor (to run Idle animation). 
             rb.linearVelocity = Vector2.zero; // stop all movement if player is on a safe floor. 
             return; // Do not continue making a non-vector as we want player to completely stop. 
         }

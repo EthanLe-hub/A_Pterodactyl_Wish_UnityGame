@@ -718,7 +718,9 @@ MonoBehaviour:
   horizontalSpeed: 3
   flySpeed: 3
   fallSpeed: 3
-  upwardSprite: {fileID: -6845956034712553097, guid: 021c4ad265168354da86ef8c75b1e1e4, type: 3}
+  flapSpeed: 0.2
+  upwardFrame1: {fileID: -6845956034712553097, guid: 021c4ad265168354da86ef8c75b1e1e4, type: 3}
+  upwardFrame2: {fileID: 1324441165966778133, guid: 021c4ad265168354da86ef8c75b1e1e4, type: 3}
   downwardSprite: {fileID: 1324441165966778133, guid: 021c4ad265168354da86ef8c75b1e1e4, type: 3}
 --- !u!212 &1831674523
 SpriteRenderer:
