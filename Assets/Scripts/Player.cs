@@ -16,9 +16,15 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private bool isFacingLeft = false;
     private bool isGrounded = false; 
+    private SpriteRenderer sr; 
+
+    // Assign upward and downward sprites via Unity Inspector: 
+    public Sprite upwardSprite;
+    public Sprite downwardSprite; 
 
     void Start()
     {
+        sr = GetComponent<SpriteRenderer>(); // Grab the SpriteRenderer component of the player (visual image). 
         rb = GetComponent<Rigidbody2D>(); // Grab the Rigidbody2D component of the player (the player is a Rigidbody2D, and we move this).
     }
 
@@ -82,15 +88,18 @@ public class Player : MonoBehaviour
         // Vertical movement
         if (moveDirection.y > 0) // If UP pressed,
         {
+            sr.sprite = upwardSprite; // Change the player sprite (on the SpriteRenderer component) to show upward frame. 
             isGrounded = false; // Always set flag to false for whenever player may be on a safe floor and wants to get up.
             yVelocity = flySpeed; // move player up. 
         }
         else if (moveDirection.y < 0) // If DOWN pressed,
         {
+            sr.sprite = downwardSprite; // Change the player sprite (on the SpriteRenderer component) to show downward frame. 
             yVelocity = -fallSpeed; // move player down. 
         }
         else // If UP released, 
         {
+            sr.sprite = downwardSprite; // Change the player sprite to show downward frame. 
             yVelocity = -fallSpeed; // again, move player down (same as if DOWN pressed). 
         }
 
