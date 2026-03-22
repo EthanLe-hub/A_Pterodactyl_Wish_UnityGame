@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
     public float horizontalSpeed = 3f;
     public float flySpeed = 3f;
     public float fallSpeed = 3f;
-    public float flapSpeed = 0.2f; // Time between upward frames. 
+    //public float flapSpeed = 0.2f; // Time between upward frames. 
 
     private Vector2 moveDirection;
     private Rigidbody2D rb;
@@ -25,6 +25,8 @@ public class Player : MonoBehaviour
     // Assign glidingSprite and restingSprite via Unity Inspector: 
     public Sprite glidingSprite;
     public Sprite restingSprite;  
+
+    public ScoreManager scoreManager; // Assign GameObject with ScoreManager script via Unity inspector. 
 
     void Start()
     {
@@ -40,19 +42,31 @@ public class Player : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+        // The floors/walls have Box Collider 2D components, but only the Floors are safe for landing. 
         if (collision.gameObject.CompareTag("Floor")) // Need to add a group tag called "Floor" to every GameObject that is a safe floor via Unity Inspector. 
         {
             isGrounded = true; // If player has entered range of a floor, set flag to true. 
         }
     }
 
-    void OnCollisionExit2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D collision) 
+    {
+        // For coins, it has a Circle Collider 2D component. 
+        if (collision.CompareTag("Coin")) // For when the player comes into contact with a GameObject with the tag "Coin".
+        {
+            scoreManager.collectCoin(); // If the player touches a valid coin, increase score and player speed. 
+
+            Destroy(collision.gameObject); // Destroy the coin to make it disappear from the screen. 
+        }
+    }
+
+    /*void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Floor")) // Need to add a group tag called "Floor" to every GameObject that is a safe floor via Unity Inspector. 
         {
             isGrounded = false; // If player has exited range of a floor, set flag to false. 
         }
-    }
+    }*/ 
 
     /**
      * LEFT arrow key: face left
@@ -90,11 +104,11 @@ public class Player : MonoBehaviour
         // Horizontal movement based on facing direction
         if (isFacingLeft)
         {
-            xVelocity = -horizontalSpeed; // If player facing left, move left. 
+            xVelocity = -horizontalSpeed * scoreManager.getSpeed(); // If player facing left, move left. 
         }
         else 
         {
-            xVelocity = horizontalSpeed; // If player facing right, move right. 
+            xVelocity = horizontalSpeed * scoreManager.getSpeed(); // If player facing right, move right. 
         }
 
         // Vertical movement
@@ -102,16 +116,16 @@ public class Player : MonoBehaviour
         {
             flapTimer += Time.deltaTime; // Increment the flapTimer constantly. 
 
-            if (flapTimer >= flapSpeed) // Once the flapTimer has reached 0.5 seconds (same as or greater than flapSpeed),
+            /*if (flapTimer >= flapSpeed) // Once the flapTimer has reached 0.5 seconds (same as or greater than flapSpeed),
             {
                 flapTimer = 0f; // reset flapTimer back to 0 seconds (so we can reuse this loop).
                 //useFirstFrame = !useFirstFrame; // Flip the flag (no matter what it is set as): true -> false, false -> true.  
-            }
+            }*/
 
             //sr.sprite = useFirstFrame ? upwardFrame1 : upwardFrame2; // Change the player sprite (on the SpriteRenderer component) to show next upward frame in the animation. 
             anim.enabled = true; // Use Animator component when player is flying (to run flying animation).
             isGrounded = false; // Always set flag to false for whenever player may be on a safe floor and wants to get up.
-            yVelocity = flySpeed; // move player up. 
+            yVelocity = flySpeed * scoreManager.getSpeed(); // move player up. 
         }
         else if (moveDirection.y < 0) // If DOWN pressed,
         {
@@ -119,7 +133,7 @@ public class Player : MonoBehaviour
             flapTimer = 0f; // Reset flapTimer back to 0 seconds (so we can reuse UP animation loop cleanly). 
             useFirstFrame = true; // Reset flag back to true to reuse UP animation loop cleanly. 
             sr.sprite = glidingSprite; // Change the player sprite (on the SpriteRenderer component) to show gliding frame. 
-            yVelocity = -fallSpeed; // move player down. 
+            yVelocity = -fallSpeed * scoreManager.getSpeed(); // move player down. 
         }
         else // If UP released, 
         {
@@ -127,13 +141,13 @@ public class Player : MonoBehaviour
             flapTimer = 0f; // Reset flapTimer back to 0 seconds (so we can reuse UP animation loop cleanly). 
             useFirstFrame = true; // Reset flag back to true to reuse UP animation loop cleanly. 
             sr.sprite = glidingSprite; // Change the player sprite to show gliding frame. 
-            yVelocity = -fallSpeed; // again, move player down (same as if DOWN pressed). 
+            yVelocity = -fallSpeed * scoreManager.getSpeed(); // again, move player down (same as if DOWN pressed). 
         }
 
         if (isGrounded) // If player is on a safe floor, 
         {
             anim.enabled = false; // Disable Animator component when player is on safe floor (to use resting sprite). 
-            sr.sprite = restingSprite; // CHange the player sprite to show resting frame. 
+            sr.sprite = restingSprite; // Change the player sprite to show resting frame. 
             rb.linearVelocity = Vector2.zero; // stop all movement if player is on a safe floor. 
             return; // Do not continue making a non-vector as we want player to completely stop. 
         }
