@@ -1313,6 +1313,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1038509703}
   - component: {fileID: 1038509704}
+  - component: {fileID: 1038509705}
   m_Layer: 0
   m_Name: Spike
   m_TagString: Spike
@@ -1394,6 +1395,56 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!60 &1038509705
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1038509702}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.28866667}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0, y: 0.5889456}
+      - {x: -0.5, y: -0.28866667}
+      - {x: 0.5, y: -0.28866667}
+  m_UseDelaunayMesh: 1
 --- !u!1 &1121461929
 GameObject:
   m_ObjectHideFlags: 0
@@ -2097,6 +2148,7 @@ MonoBehaviour:
   fallSpeed: 3
   glidingSprite: {fileID: -987973913525779643, guid: 0a4b10f49033e8343af8b7e907e3e9c7, type: 3}
   restingSprite: {fileID: 7285479288808554973, guid: 0a4b10f49033e8343af8b7e907e3e9c7, type: 3}
+  deathSprite: {fileID: -1766092631568770163, guid: f840e70b42585064c90d1815998cebcc, type: 3}
   scoreManager: {fileID: 1736730404}
 --- !u!212 &1831674523
 SpriteRenderer:

@@ -1,6 +1,7 @@
 // Ethan Le (3/11/2026): 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement; 
 
 /**
  * Script handles player's movement and facing direction.
@@ -17,14 +18,17 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer sr; 
     private Animator anim; // Holds Animator component which links to the Animation asset that has the 3 frames of flying animation (the key frames). 
+    private Collider2D col; // Holds player's Collider2D component that allows for collision logic. 
     private bool isFacingLeft = false;
     private bool isGrounded = false; 
     private float flapTimer = 0f; 
     private bool useFirstFrame = true; 
+    private bool isDead = false; // Flag for when the player dies. 
 
-    // Assign glidingSprite and restingSprite via Unity Inspector: 
+    // Assign glidingSprite, restingSprite, and deathSprite via Unity Inspector: 
     public Sprite glidingSprite;
     public Sprite restingSprite;  
+    public Sprite deathSprite; 
 
     public ScoreManager scoreManager; // Assign GameObject with ScoreManager script via Unity inspector. 
 
@@ -32,12 +36,19 @@ public class Player : MonoBehaviour
     {
         sr = GetComponent<SpriteRenderer>(); // Grab the SpriteRenderer component of the player (visual image). 
         rb = GetComponent<Rigidbody2D>(); // Grab the Rigidbody2D component of the player (the player is a Rigidbody2D, and we move this).
-        anim = GetComponent<Animator>(); // Grab the Animator component of the player (renders idle animation). 
+        anim = GetComponent<Animator>(); // Grab the Animator component of the player (renders flying animation). 
+        col = GetComponent<Collider2D>(); // Grab the Collider2D component of the player (allows for collision logic). 
     }
 
-    void Update()
+    /*void Update()
     {
         anim.SetBool("isGrounded", isGrounded); // Set the idle animation playing to be true only if the player is on a safe floor. 
+    }*/
+
+    // Function to reset the current game scene: 
+    void ResetGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -46,6 +57,24 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Floor")) // Need to add a group tag called "Floor" to every GameObject that is a safe floor via Unity Inspector. 
         {
             isGrounded = true; // If player has entered range of a floor, set flag to true. 
+        }
+
+        // Spikes have Polygon Collider 2D component, and if the player touches it, the player dies. 
+        if (collision.gameObject.CompareTag("Spike")) // For when the player comes into contact with a GameObject with the tag "Spike". 
+        {
+            isDead = true; // Player is now dead. 
+
+            anim.enabled = false; // Turn off flying animation if necessary. 
+            col.enabled = false; // Turn off collision component to allow player to fall through the level upon death. 
+            sr.sprite = deathSprite; // Set the player sprite to the death frame. 
+            sr.flipY = true; // Flip the player sprite upside down to simulate death. 
+            sr.sortingOrder = 100; // Bring player sprite to the front upon death. 
+
+            rb.linearVelocity = new Vector2(0, -1f); // Have the player fall off the screen. 
+            rb.angularVelocity = 200f; // Spin the sprite as a little extra flair.
+            rb.gravityScale = 2.5f; // Increase gravity for drop upon death. 
+
+            Invoke("ResetGame", 2f); // Wait for 2 seconds before restarting game. 
         }
     }
 
@@ -96,6 +125,11 @@ public class Player : MonoBehaviour
 
     void FixedUpdate() // FixedUpdate is called at a fixed framerate.
     {
+        if (isDead == true)
+        {
+            return; // If the player dies, prevent any movement. 
+        }
+
         anim.enabled = false; // Assume player is not on safe floor every frame. 
 
         float xVelocity; // Tracks horizontal speed. 
