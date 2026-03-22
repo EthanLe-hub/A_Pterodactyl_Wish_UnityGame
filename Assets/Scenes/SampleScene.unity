@@ -673,7 +673,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.45, y: 0.61}
+  m_AnchoredPosition: {x: 1.6, y: -0.89}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!50 &1831674521
@@ -719,9 +719,8 @@ MonoBehaviour:
   flySpeed: 3
   fallSpeed: 3
   flapSpeed: 0.2
-  upwardFrame1: {fileID: -6845956034712553097, guid: 021c4ad265168354da86ef8c75b1e1e4, type: 3}
-  upwardFrame2: {fileID: 1324441165966778133, guid: 021c4ad265168354da86ef8c75b1e1e4, type: 3}
-  downwardSprite: {fileID: 1324441165966778133, guid: 021c4ad265168354da86ef8c75b1e1e4, type: 3}
+  glidingSprite: {fileID: -987973913525779643, guid: 0a4b10f49033e8343af8b7e907e3e9c7, type: 3}
+  restingSprite: {fileID: 7285479288808554973, guid: 0a4b10f49033e8343af8b7e907e3e9c7, type: 3}
 --- !u!212 &1831674523
 SpriteRenderer:
   serializedVersion: 2
@@ -865,7 +864,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1831674519}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 1ece29c52420b2f44b9c033d3e250a66, type: 2}
   m_CullingMode: 0

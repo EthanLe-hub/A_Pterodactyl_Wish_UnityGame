@@ -16,16 +16,15 @@ public class Player : MonoBehaviour
     private Vector2 moveDirection;
     private Rigidbody2D rb;
     private SpriteRenderer sr; 
-    private Animator anim; 
+    private Animator anim; // Holds Animator component which links to the Animation asset that has the 3 frames of flying animation (the key frames). 
     private bool isFacingLeft = false;
     private bool isGrounded = false; 
     private float flapTimer = 0f; 
     private bool useFirstFrame = true; 
 
-    // Assign upward animation (alternates between upward sprite and downward sprite) and downward sprite via Unity Inspector: 
-    public Sprite upwardFrame1;
-    public Sprite upwardFrame2; 
-    public Sprite downwardSprite;  
+    // Assign glidingSprite and restingSprite via Unity Inspector: 
+    public Sprite glidingSprite;
+    public Sprite restingSprite;  
 
     void Start()
     {
@@ -106,31 +105,35 @@ public class Player : MonoBehaviour
             if (flapTimer >= flapSpeed) // Once the flapTimer has reached 0.5 seconds (same as or greater than flapSpeed),
             {
                 flapTimer = 0f; // reset flapTimer back to 0 seconds (so we can reuse this loop).
-                useFirstFrame = !useFirstFrame; // Flip the flag (no matter what it is set as): true -> false, false -> true.  
+                //useFirstFrame = !useFirstFrame; // Flip the flag (no matter what it is set as): true -> false, false -> true.  
             }
 
-            sr.sprite = useFirstFrame ? upwardFrame1 : upwardFrame2; // Change the player sprite (on the SpriteRenderer component) to show next upward frame in the animation. 
+            //sr.sprite = useFirstFrame ? upwardFrame1 : upwardFrame2; // Change the player sprite (on the SpriteRenderer component) to show next upward frame in the animation. 
+            anim.enabled = true; // Use Animator component when player is flying (to run flying animation).
             isGrounded = false; // Always set flag to false for whenever player may be on a safe floor and wants to get up.
             yVelocity = flySpeed; // move player up. 
         }
         else if (moveDirection.y < 0) // If DOWN pressed,
         {
+            anim.enabled = false; // Disable Animator component when player is on safe floor (to use gliding sprite).
             flapTimer = 0f; // Reset flapTimer back to 0 seconds (so we can reuse UP animation loop cleanly). 
             useFirstFrame = true; // Reset flag back to true to reuse UP animation loop cleanly. 
-            sr.sprite = downwardSprite; // Change the player sprite (on the SpriteRenderer component) to show downward frame. 
+            sr.sprite = glidingSprite; // Change the player sprite (on the SpriteRenderer component) to show gliding frame. 
             yVelocity = -fallSpeed; // move player down. 
         }
         else // If UP released, 
         {
+            anim.enabled = false; // Disable Animator component when player is on safe floor (to use gliding sprite).
             flapTimer = 0f; // Reset flapTimer back to 0 seconds (so we can reuse UP animation loop cleanly). 
             useFirstFrame = true; // Reset flag back to true to reuse UP animation loop cleanly. 
-            sr.sprite = downwardSprite; // Change the player sprite to show downward frame. 
+            sr.sprite = glidingSprite; // Change the player sprite to show gliding frame. 
             yVelocity = -fallSpeed; // again, move player down (same as if DOWN pressed). 
         }
 
         if (isGrounded) // If player is on a safe floor, 
         {
-            anim.enabled = true; // Use Animator component when player is on safe floor (to run Idle animation). 
+            anim.enabled = false; // Disable Animator component when player is on safe floor (to use resting sprite). 
+            sr.sprite = restingSprite; // CHange the player sprite to show resting frame. 
             rb.linearVelocity = Vector2.zero; // stop all movement if player is on a safe floor. 
             return; // Do not continue making a non-vector as we want player to completely stop. 
         }
