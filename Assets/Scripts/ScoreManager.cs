@@ -46,6 +46,24 @@ public class ScoreManager : MonoBehaviour
         currPlayerSpeed.text = "Current Speed: " + speedMultiplier; // Update the displayed speed. 
     }
 
+    public void collectSlowCoin()
+    {
+        // Update the backend score and speed multiplier: 
+        
+        score -= 50; 
+
+        if (score < 0)
+        {
+            score = 0; 
+        }
+        
+        speedMultiplier -= 0.10f; 
+
+        playerScoreboard.text = "Score: " + score; // Update the displayed score. 
+
+        currPlayerSpeed.text = "Current Speed: " + speedMultiplier; // Update the displayed speed. 
+    }
+
     // Function to retrieve the speed multiplier to update player speed upon collecting a purple coin: 
     public float getSpeed()
     {

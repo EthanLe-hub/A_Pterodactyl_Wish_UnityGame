@@ -87,6 +87,14 @@ public class Player : MonoBehaviour
 
             Destroy(collision.gameObject); // Destroy the coin to make it disappear from the screen. 
         }
+
+        // For slow coins, it also has a Circle Collider 2D component. 
+        if (collision.CompareTag("Slow Coin")) // For when the player comes into contact with a GameObject with the tag "Slow Coin". 
+        {
+            scoreManager.collectSlowCoin(); // If the player touches a valid slow coin, decrease score and player speed. 
+
+            Destroy(collision.gameObject); // Destroy the slow coin to make it disappear from the screen. 
+        }
     }
 
     /*void OnCollisionExit2D(Collision2D collision)
