@@ -8,6 +8,14 @@ TagManager:
   - Coin
   - Spike
   - Slow Coin
+  - Hazard
+  - Big Gold Coin
+  - Medium Gold Coin
+  - Small Gold Coin
+  - "public void collectBigGoldCoin()\r\n    {\r\n        // Update the backend score
+    only (gold coins are simply rewards): \r\n        score += 500; // Add 500 points
+    for big gold coins. \r\n\r\n        playerScoreboard.text = \"Score : \" + score;
+    // Update the displayed score. \r\n    }"
   layers:
   - Default
   - TransparentFX

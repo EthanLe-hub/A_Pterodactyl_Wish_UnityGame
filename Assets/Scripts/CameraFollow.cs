@@ -7,7 +7,7 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour 
 {
     public Transform player; // The Player Transform component to follow. 
-    public float cameraSpeed = 5f; // Speed at which to move the camera with the player. 
+    public float cameraSpeed = 10f; // Speed at which to move the camera with the player. 
 
     void LateUpdate()
     {

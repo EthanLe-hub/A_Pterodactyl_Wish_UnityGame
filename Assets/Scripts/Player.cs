@@ -59,8 +59,8 @@ public class Player : MonoBehaviour
             isGrounded = true; // If player has entered range of a floor, set flag to true. 
         }
 
-        // Spikes have Polygon Collider 2D component, and if the player touches it, the player dies. 
-        if (collision.gameObject.CompareTag("Spike")) // For when the player comes into contact with a GameObject with the tag "Spike". 
+        // Spikes and Grinder Hazards have Polygon Collider 2D component, and if the player touches it, the player dies. 
+        if (collision.gameObject.CompareTag("Spike") || collision.gameObject.CompareTag("Hazard")) // For when the player comes into contact with a GameObject with the tag "Spike" or "Hazard". 
         {
             isDead = true; // Player is now dead. 
 
@@ -91,9 +91,33 @@ public class Player : MonoBehaviour
         // For slow coins, it also has a Circle Collider 2D component. 
         if (collision.CompareTag("Slow Coin")) // For when the player comes into contact with a GameObject with the tag "Slow Coin". 
         {
-            scoreManager.collectSlowCoin(); // If the player touches a valid slow coin, decrease score and player speed. 
+            scoreManager.collectSlowCoin(); // If the player touches a valid slow coin, increase score and decrease player speed. 
 
             Destroy(collision.gameObject); // Destroy the slow coin to make it disappear from the screen. 
+        }
+
+        // For BIG gold coins, it also has a Circle Collider 2D component. 
+        if (collision.CompareTag("Big Gold Coin")) // For when the player contacts a GameObject with tag "Big Gold Coin". 
+        {
+            scoreManager.collectBigGoldCoin(); // If player touches a valid BIG gold coin, increase score by 500. 
+
+            Destroy(collision.gameObject); // Destroy the coin to make it disappear from the screen. 
+        }
+
+        // For MEDIUM gold coins, it also has a Circle Collider 2D component. 
+        if (collision.CompareTag("Medium Gold Coin")) // For when the player contacts a GameObject with tag "Medium Gold Coin". 
+        {
+            scoreManager.collectMedGoldCoin(); // If player touches a valid MEDIUM gold coin, increase score by 250. 
+
+            Destroy(collision.gameObject); // Destroy the coin to make it disappear from the screen. 
+        }
+
+        // For SMALL gold coins, it also has a Circle Collider 2D component. 
+        if (collision.CompareTag("Small Gold Coin")) // For when the player contacts a GameObject with tag "Small Gold Coin". 
+        {
+            scoreManager.collectSmallGoldCoin(); // If player touches a valid SMALL gold coin, increase score by 10. 
+
+            Destroy(collision.gameObject); // Destroy the coin to make it disappear from the screen. 
         }
     }
 

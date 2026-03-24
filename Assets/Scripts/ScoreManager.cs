@@ -38,7 +38,7 @@ public class ScoreManager : MonoBehaviour
     public void collectCoin()
     {
         // Update the backend score and speed multiplier:
-        score += 50; 
+        score += 10; 
         speedMultiplier += 0.10f; 
 
         playerScoreboard.text = "Score: " + score; // Update the displayed score. 
@@ -50,18 +50,42 @@ public class ScoreManager : MonoBehaviour
     {
         // Update the backend score and speed multiplier: 
         
-        score -= 50; 
+        score += 10; 
 
-        if (score < 0)
+        /*if (score < 0)
         {
             score = 0; 
-        }
-        
+        }*/
+
         speedMultiplier -= 0.10f; 
 
         playerScoreboard.text = "Score: " + score; // Update the displayed score. 
 
         currPlayerSpeed.text = "Current Speed: " + speedMultiplier; // Update the displayed speed. 
+    }
+
+    public void collectBigGoldCoin()
+    {
+        // Update the backend score only (gold coins are simply rewards): 
+        score += 500; // Add 500 points for big gold coins. 
+
+        playerScoreboard.text = "Score : " + score; // Update the displayed score. 
+    }
+
+    public void collectMedGoldCoin()
+    {
+        // Update the backend score only (gold coins are simply rewards): 
+        score += 250; // Add 250 points for medium gold coins. 
+
+        playerScoreboard.text = "Score : " + score; // Update the displayed score. 
+    }
+
+    public void collectSmallGoldCoin()
+    {
+        // Update the backend score only (gold coins are simply rewards): 
+        score += 10; // Add 10 points for small gold coins. 
+
+        playerScoreboard.text = "Score : " + score; // Update the displayed score. 
     }
 
     // Function to retrieve the speed multiplier to update player speed upon collecting a purple coin: 
