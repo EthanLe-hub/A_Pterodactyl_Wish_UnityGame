@@ -17,7 +17,7 @@ public class GrinderMovement : MonoBehaviour
 
     void Start()
     {
-        target = pointB;
+        target = pointB; // The position where the hazard will end up. 
     }
 
     /** 
@@ -29,8 +29,8 @@ public class GrinderMovement : MonoBehaviour
 
         // Otherwise, move the hazard to the other end (target) at the defined speed: 
         transform.position = Vector3.MoveTowards(
-            transform.position,
-            target.position,
+            transform.position, // Go from the original position
+            target.position, // to the target position. 
             speed * Time.deltaTime
         );
 
