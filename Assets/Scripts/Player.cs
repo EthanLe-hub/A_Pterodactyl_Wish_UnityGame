@@ -24,6 +24,8 @@ public class Player : MonoBehaviour
     private float flapTimer = 0f; 
     private bool useFirstFrame = true; 
     private bool isDead = false; // Flag for when the player dies. 
+    private SecondStoryController secStoryManager; // The actual script for MIDWAY story sequence. 
+    private GameObject secStoryObject; // The actual GameObject to display MIDWAY story sequence. 
 
     // Assign glidingSprite, restingSprite, and deathSprite via Unity Inspector: 
     public Sprite glidingSprite;
@@ -32,7 +34,7 @@ public class Player : MonoBehaviour
 
     public ScoreManager scoreManager; // Assign GameObject with ScoreManager script via Unity inspector. 
 
-    void Start()
+    void Start() 
     {
         sr = GetComponent<SpriteRenderer>(); // Grab the SpriteRenderer component of the player (visual image). 
         rb = GetComponent<Rigidbody2D>(); // Grab the Rigidbody2D component of the player (the player is a Rigidbody2D, and we move this).
@@ -119,7 +121,32 @@ public class Player : MonoBehaviour
 
             Destroy(collision.gameObject); // Destroy the coin to make it disappear from the screen. 
         }
+
+        // The Completion Flag has a Polygon Collider 2D component. 
+        if (collision.CompareTag("Level 1 Completed")) // For when the player contacts a GameObject with tag "Level 1 Completed". 
+        {
+            //NextLevel(); // Call function to start next level narration. 
+            GameManager.instance.storySequence.SetActive(false); // Ensure intro story sequence is off.
+            GameManager.instance.secStorySequence.SetActive(true); // Open up MIDWAY story sequence. 
+        }
     }
+
+/*
+    // Function to start next level narration:
+    void NextLevel()
+    {
+        if (!GameManager.instance.midStoryPlayed) // If midway story sequence has not played at all during this run, 
+        {
+            GameManager.instance.storySequence.SetActive(false); // Ensure intro story sequence is off.
+            GameManager.instance.secStorySequence.SetActive(true); // Open up MIDWAY story sequence. 
+        }
+
+        else // Otherwise, if midway story sequence has already played once, do not play again during player death. 
+        {
+            GameManager.instance.ContGame(); // Just restart SECOND level again. 
+        }
+    }
+*/
 
     /*void OnCollisionExit2D(Collision2D collision)
     {

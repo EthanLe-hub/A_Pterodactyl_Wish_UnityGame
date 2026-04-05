@@ -1,12 +1,12 @@
-// Ethan Le (3/25/2026):
+// Ethan Le (4/4/2026):
 using UnityEngine;
 using UnityEngine.InputSystem; 
 using TMPro;
 
 /** 
- * Script to control INTRO story sequence:
+ * Script to control MIDWAY story sequence (after completing first level, before playing second level):
 **/ 
-public class StoryController : MonoBehaviour
+public class SecondStoryController : MonoBehaviour
 {
     public TextMeshProUGUI storyText;
 
@@ -45,9 +45,13 @@ public class StoryController : MonoBehaviour
         }
         else
         {
-            // Otherwise, start the game if the narration is done:  
-            GameManager.instance.introPlayed = true; // Set flag to true so intro narration does not play again upon dying. 
-            GameManager.instance.StartGame(); // Controlled by singleton GameManager instance. 
+            GameManager.instance.midStoryPlayed = true; // Set flag to true so midway story sequence does not play again upon dying. 
+            /*
+            // Otherwise, continue the game (second level) if the narration is done:  
+            GameManager.instance.ContGame(); // Controlled by singleton GameManager instance. 
+            */
+
+            storyText.text = "THE END!"; 
         }
     }
 }
