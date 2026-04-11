@@ -1,6 +1,8 @@
 // Ethan Le (3/25/2026):
 using System;
 using System.Collections.Generic; 
+using System.Linq; // For using Reverse() to get top Keys from the Sorted Dictionary. 
+using System.Text; // For StringBuilder. 
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement; // To control scene reloads. 
@@ -22,8 +24,12 @@ public class GameManager : MonoBehaviour
     // Title Screen components:
     public Button playButton; 
     public Button creditsButton; 
+    public Button scoreboardButton; 
     public Button closeCreditsButton; 
+    public Button closeScoreboardButton;
     public GameObject creditsPage; 
+    public GameObject scoreboardPage; 
+    public TextMeshProUGUI scoreText; 
 
     // Flag to mark narration being complete: 
     public bool introPlayed = false; // Always play intro during every first playthrough. 
@@ -121,8 +127,13 @@ public class GameManager : MonoBehaviour
         // Re-find title components and buttons and re-attach listeners after game reloads (like after the player dies):
         playButton = GameObject.Find("PlayButton").GetComponent<Button>(); 
         creditsButton = GameObject.Find("CreditsButton").GetComponent<Button>();
+        scoreboardButton = GameObject.Find("ScoreboardButton").GetComponent<Button>(); 
         creditsPage = GameObject.Find("CreditsPage"); 
-        closeCreditsButton = GameObject.Find("CloseButton").GetComponent<Button>(); 
+        scoreboardPage = GameObject.Find("ScoreboardPage"); 
+        closeCreditsButton = GameObject.Find("CloseCreditsButton").GetComponent<Button>(); 
+        closeScoreboardButton = GameObject.Find("CloseScoreboardButton").GetComponent<Button>(); 
+        GameObject scoreGameObject = GameObject.Find("ScoreText"); 
+        scoreText = scoreGameObject.GetComponent<TextMeshProUGUI>(); 
 
         SetupTitleButtons(); 
             
@@ -150,6 +161,7 @@ public class GameManager : MonoBehaviour
         // The game starts with the story sequence on first playthrough:
         titleScreen.SetActive(true); // Game begins with title screen. 
         creditsPage.SetActive(false); // Ensure Credits page is off when title screen shows up. 
+        scoreboardPage.SetActive(false); // Ensure Scoreboard page is off when title screen shows up. 
         storySequence.SetActive(false); 
         secStorySequence.SetActive(false); 
         gameScene.SetActive(false); 
@@ -164,7 +176,9 @@ public class GameManager : MonoBehaviour
         // Remove any potential existing listeners to ensure we do not add extra listeners: 
         playButton.onClick.RemoveAllListeners(); 
         creditsButton.onClick.RemoveAllListeners();
+        scoreboardButton.onClick.RemoveAllListeners(); 
         closeCreditsButton.onClick.RemoveAllListeners(); 
+        closeScoreboardButton.onClick.RemoveAllListeners(); 
 
         // Attach onClick listeners to Title Screen buttons:
         playButton.onClick.AddListener(() => {
@@ -172,7 +186,12 @@ public class GameManager : MonoBehaviour
             storySequence.SetActive(true); // When player clicks Play button, commence story sequence. 
         }); 
         creditsButton.onClick.AddListener(() => creditsPage.SetActive(true)); // Show Credits page if Credits button is clicked. 
-        closeCreditsButton.onClick.AddListener(() => creditsPage.SetActive(false)); // Close Credits page if Close [credits] button is clicked. 
+        scoreboardButton.onClick.AddListener(() => {
+            scoreboardPage.SetActive(true); 
+            displayHighScores(); 
+        }); // Show Scoreboard page with the high scores if Scoreboard button is clicked. 
+        closeCreditsButton.onClick.AddListener(() => creditsPage.SetActive(false)); // Close Credits page if Close Credits button is clicked. 
+        closeScoreboardButton.onClick.AddListener(() => scoreboardPage.SetActive(false)); // Close Scoreboard page if Close Scoreboard button is clicked. 
     }
 
     /**
@@ -236,6 +255,30 @@ public class GameManager : MonoBehaviour
     }
 
     /**
+     * Function to return to the Title screen (upon quitting mid-game or after completing the game):
+    **/ 
+    public void returnToTitle()
+    {
+        // Reset important components and variables for new run:
+        deathCount = 0;
+        scoreManager.resetScore(); 
+
+        // The game starts with the story sequence on first playthrough:
+        titleScreen.SetActive(true); // Game begins with title screen. 
+        creditsPage.SetActive(false); // Ensure Credits page is off when title screen shows up. 
+        scoreboardPage.SetActive(false); // Ensure Scoreboard page is off when title screen shows up. 
+        storySequence.SetActive(false); 
+        secStorySequence.SetActive(false); 
+        gameScene.SetActive(false); 
+        playerDialogueCanvas.SetActive(true); // Need to stay true to trigger dialogue later. 
+        firstGameLevel.SetActive(false); 
+
+        // Set flags to false so it is a fresh run: 
+        introPlayed = false; 
+        midStoryPlayed = false; 
+    }
+
+    /**
      * Function to retrieve current player death count: 
     **/
     public int getDeathCount()
@@ -280,5 +323,37 @@ public class GameManager : MonoBehaviour
                 playerData[getNewScore()] = deathCount; // dict[key] = value; 
             }
         }
+    }
+
+    /** 
+     * Function to display the top 5 Scores and their Death Counts in the Scoreboard Page:
+    **/
+    public void displayHighScores()
+    {
+        StringBuilder newString = new StringBuilder(); // To append each of the top 5 scores into for display. 
+
+        int i = 0; // Keeps track of how many pairs we have already added to the display. 
+
+        // Loop through each Key-Value pair in the Sorted Dictionary starting with the last one (the highest): 
+        foreach (var pair in playerData.Reverse())
+        {
+            if (i < 5)
+            {
+                newString.AppendLine("Score: " + pair.Key + "    |    " + "Death Count: " + pair.Value + "\n"); 
+                i++; 
+            }
+
+            else // If 5 scores already have been added, break out of the loop. 
+            {
+                break; 
+            }
+        }
+
+        if (scoreText != null) // Safety check to ensure we have the TMPro component for displaying the top 5 scores and their death counts.  
+        {
+            scoreText.text = newString.ToString(); // Set the newly built string to be displayed. 
+        }
+
+        Debug.Log("Successful Score Display!"); 
     }
 }

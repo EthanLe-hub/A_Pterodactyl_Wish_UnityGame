@@ -105,4 +105,10 @@ public class ScoreManager : MonoBehaviour
     {
         return score; 
     }
+
+    // Function to reset score after game completion: 
+    public void resetScore()
+    {
+        score = 0;
+    }
 }
