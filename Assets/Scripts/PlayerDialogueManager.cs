@@ -52,7 +52,7 @@ public class PlayerDialogueManager : MonoBehaviour
         dialogue.text = line;
 
         // Hide automatically after a few seconds:
-        dialCoroutine = StartCoroutine(HideAfterSeconds(10f)); // Start time duration for dialogue appearance. 
+        dialCoroutine = StartCoroutine(HideAfterSeconds(8f)); // Start time duration for dialogue appearance. 
     }
 
     // Have the player dialogue pop up: 
