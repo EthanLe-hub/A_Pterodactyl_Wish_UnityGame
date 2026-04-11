@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
     // Flag to make it so that the OnSceneLoaded function does NOT run on first load (it should only run upon player death):
     private bool hasInitialized = false; 
 
+    // Int variable to keep track of player death count (needs to be in GameManager so it persists upon game reloads):
+    private int deathCount = 0; 
+
     // Singleton instance of GameManager: 
     public static GameManager instance; 
 
@@ -179,5 +182,21 @@ public class GameManager : MonoBehaviour
         {
             dm.HideAllUI(); 
         }
+    }
+
+    /**
+     * Function to retrieve current player death count: 
+    **/
+    public int getDeathCount()
+    {
+        return deathCount; 
+    }
+
+    /** 
+     * Function to increment player death count (when player dies):
+    **/
+    public void incrementDeathCount()
+    {
+        deathCount++; 
     }
 }

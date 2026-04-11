@@ -50,6 +50,7 @@ public class Player : MonoBehaviour
     // Function to reset the current game scene: 
     void ResetGame()
     {
+        scoreManager.incDeathCount(); // Increment death count every time the game scene reloads (when player dies). 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

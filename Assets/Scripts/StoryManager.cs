@@ -1,6 +1,7 @@
 // Ethan Le (3/25/2026):
 using UnityEngine;
 using UnityEngine.InputSystem; 
+using UnityEngine.UI; 
 using TMPro;
 
 /** 
@@ -9,6 +10,7 @@ using TMPro;
 public class StoryController : MonoBehaviour
 {
     public TextMeshProUGUI storyText;
+    public Button skipButton; // For skipping intro if player does not want to read. 
 
     [TextArea(3, 5)]
     public string[] storyLines; // Array -- Fill in Unity Inspector with the beginning narration.
@@ -17,6 +19,11 @@ public class StoryController : MonoBehaviour
 
     void Start()
     {
+        if (skipButton != null) // Ensure the Button component is assigned in Unity Inspector. 
+        {
+            skipButton.onClick.AddListener(SkipIntro); // Add listener to skip intro when button is pressed. 
+        }
+
         ShowCurrentLine(); // Game starts at index 0 in the sequence of narration lines. 
     }
 
@@ -49,5 +56,11 @@ public class StoryController : MonoBehaviour
             GameManager.instance.introPlayed = true; // Set flag to true so intro narration does not play again upon dying. 
             GameManager.instance.StartGame(); // Controlled by singleton GameManager instance. 
         }
+    }
+
+    void SkipIntro()
+    {
+        GameManager.instance.introPlayed = true; // Set flag to true so intro narration does not play again upon dying. 
+        GameManager.instance.StartGame(); // Controlled by singleton GameManager instance. 
     }
 }

@@ -8,12 +8,14 @@ using TMPro;
 **/ 
 public class ScoreManager : MonoBehaviour 
 {
+    // Variables for UI components to display: 
     private int score = 0; 
     private float speedMultiplier = 1f; 
-
+    
     // UI components to display on Unity Canvas (assign in Unity Inspector): 
     public TextMeshProUGUI playerScoreboard; 
     public TextMeshProUGUI currPlayerSpeed; 
+    public TextMeshProUGUI deathCountUI; 
 
     // Upon starting the game, call function to initialize default score and speed.  
     void Start()
@@ -27,6 +29,8 @@ public class ScoreManager : MonoBehaviour
         playerScoreboard.text = "Score: " + score; // Display the default score of 0. 
         
         currPlayerSpeed.text = "Current Speed: " + speedMultiplier; // Display the default speed of 1x. 
+
+        deathCountUI.text = "Death Count: " + GameManager.instance.getDeathCount(); // Display the default death count of 0 (from GameManager singleton instance). 
     }
 
     public void collectCoin()
@@ -80,6 +84,14 @@ public class ScoreManager : MonoBehaviour
         score += 10; // Add 10 points for small gold coins. 
 
         playerScoreboard.text = "Score : " + score; // Update the displayed score. 
+    }
+
+    public void incDeathCount()
+    {
+        // Update the player's death count whenever scene reloads (AKA, when the player dies):
+        GameManager.instance.incrementDeathCount();  
+
+        deathCountUI.text = "Death Count: " + GameManager.instance.getDeathCount(); // Update the displayed death count. 
     }
 
     // Function to retrieve the speed multiplier to update player speed upon collecting a purple coin: 
