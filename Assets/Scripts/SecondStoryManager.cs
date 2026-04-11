@@ -51,7 +51,7 @@ public class SecondStoryController : MonoBehaviour
             GameManager.instance.ContGame(); // Controlled by singleton GameManager instance. 
             */
 
-            storyText.text = "THE END!"; 
+            storyText.text = "Your final score: " + GameManager.instance.getNewScore() + "\nYour death count: " + GameManager.instance.getDeathCount(); 
         }
     }
 }

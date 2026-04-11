@@ -99,4 +99,10 @@ public class ScoreManager : MonoBehaviour
     {
         return speedMultiplier; 
     }
+
+    // Function to retrieve score of the player (for when the player finishes the game):
+    public int getScore()
+    {
+        return score; 
+    }
 }

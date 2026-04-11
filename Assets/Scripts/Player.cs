@@ -127,6 +127,7 @@ public class Player : MonoBehaviour
         if (collision.CompareTag("Level 1 Completed")) // For when the player contacts a GameObject with tag "Level 1 Completed". 
         {
             //NextLevel(); // Call function to start next level narration. 
+            GameManager.instance.addToPlayerData(); // Add new score and death count to player data. 
             GameManager.instance.storySequence.SetActive(false); // Ensure intro story sequence is off.
             GameManager.instance.secStorySequence.SetActive(true); // Open up MIDWAY story sequence. 
         }

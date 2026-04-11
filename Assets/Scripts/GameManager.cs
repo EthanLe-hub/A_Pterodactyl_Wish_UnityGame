@@ -1,4 +1,6 @@
 // Ethan Le (3/25/2026):
+using System;
+using System.Collections.Generic; 
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement; // To control scene reloads. 
@@ -15,6 +17,13 @@ public class GameManager : MonoBehaviour
     public GameObject secStorySequence; // Contains the text for the MIDWAY story sequence. 
     public GameObject playerDialogueCanvas; // Contains the player dialogue (for tutorial and narration purposes). 
     public GameObject firstGameLevel; // Contains the level layout and player sprite. 
+    public GameObject titleScreen; // Contains the title screen for the game. 
+
+    // Title Screen components:
+    public Button playButton; 
+    public Button creditsButton; 
+    public Button closeCreditsButton; 
+    public GameObject creditsPage; 
 
     // Flag to mark narration being complete: 
     public bool introPlayed = false; // Always play intro during every first playthrough. 
@@ -25,6 +34,10 @@ public class GameManager : MonoBehaviour
 
     // Int variable to keep track of player death count (needs to be in GameManager so it persists upon game reloads):
     private int deathCount = 0; 
+
+    // A Sorted Dictionary (Java equivalent of a TreeMap) that keeps records of a player's score and death count (Score, Death Count):
+    // Sorts by Key (Score):
+    SortedDictionary<int, int> playerData = new SortedDictionary<int, int>(); 
 
     // Singleton instance of GameManager: 
     public static GameManager instance; 
@@ -102,12 +115,30 @@ public class GameManager : MonoBehaviour
         secStorySequence = GameObject.Find("2ndStorySequence");
         playerDialogueCanvas = GameObject.Find("PlayerDialogueCanvas");
         firstGameLevel = GameObject.Find("FirstLevel");
+        titleScreen = GameObject.Find("TitleScreen"); 
+        scoreManager = GameObject.FindObjectOfType<ScoreManager>(); 
+
+        // Re-find title components and buttons and re-attach listeners after game reloads (like after the player dies):
+        playButton = GameObject.Find("PlayButton").GetComponent<Button>(); 
+        creditsButton = GameObject.Find("CreditsButton").GetComponent<Button>();
+        creditsPage = GameObject.Find("CreditsPage"); 
+        closeCreditsButton = GameObject.Find("CloseButton").GetComponent<Button>(); 
+
+        SetupTitleButtons(); 
             
-        // Restart game flow w/o the intro narration: 
-        if (introPlayed == true)
+        // Restart game flow w/o the intro narration (taken care of by "StartGame()" function): 
+        titleScreen.SetActive(false); // Do not return to title screen. 
+        // No story sequences, just open up scoreboard and player speed and the level itself: 
+        if (storySequence != null)
         {
-            StartGame(); // Skips beginning story narration. 
-        } 
+            storySequence.SetActive(false); 
+        }
+
+        if (secStorySequence != null)
+        {
+            secStorySequence.SetActive(false); 
+        }
+        StartGame(); // Skips beginning story narration. 
     }
 
     void Start() // Only runs ONCE the whole game (when you first start the game): 
@@ -117,11 +148,31 @@ public class GameManager : MonoBehaviour
         midStoryPlayed = false; 
 
         // The game starts with the story sequence on first playthrough:
-        storySequence.SetActive(true); // Game begins with story narration when player first plays. 
+        titleScreen.SetActive(true); // Game begins with title screen. 
+        creditsPage.SetActive(false); // Ensure Credits page is off when title screen shows up. 
+        storySequence.SetActive(false); 
         secStorySequence.SetActive(false); 
         gameScene.SetActive(false); 
         playerDialogueCanvas.SetActive(true); // Need to stay true to trigger dialogue later. 
         firstGameLevel.SetActive(false); 
+
+        SetupTitleButtons(); // Call function to add listeners to Title Screen Buttons. 
+    }
+
+    void SetupTitleButtons()
+    {
+        // Remove any potential existing listeners to ensure we do not add extra listeners: 
+        playButton.onClick.RemoveAllListeners(); 
+        creditsButton.onClick.RemoveAllListeners();
+        closeCreditsButton.onClick.RemoveAllListeners(); 
+
+        // Attach onClick listeners to Title Screen buttons:
+        playButton.onClick.AddListener(() => {
+            titleScreen.SetActive(false);
+            storySequence.SetActive(true); // When player clicks Play button, commence story sequence. 
+        }); 
+        creditsButton.onClick.AddListener(() => creditsPage.SetActive(true)); // Show Credits page if Credits button is clicked. 
+        closeCreditsButton.onClick.AddListener(() => creditsPage.SetActive(false)); // Close Credits page if Close [credits] button is clicked. 
     }
 
     /**
@@ -198,5 +249,36 @@ public class GameManager : MonoBehaviour
     public void incrementDeathCount()
     {
         deathCount++; 
+    }
+
+    /**
+     * Function to get score from Score Manager:
+    **/
+    public int getNewScore()
+    {
+        return scoreManager.getScore(); 
+    }
+
+    /** 
+     * Function to add score and death count to Sorted Dictionary data after player completes the game: 
+    **/
+    public void addToPlayerData()
+    {
+        // Write a brand new key-value pair if player's score has not been achieved before: 
+        if (!playerData.ContainsKey(getNewScore()))
+        {
+            playerData.Add(getNewScore(), deathCount); 
+        }
+
+        // Otherwise, replace the existing score with the new death count IF the death count is lower than previously (takes the better record):
+        else 
+        {
+            playerData.TryGetValue(getNewScore(), out int oldDeathCount); // Get the old death count from the Key. 
+
+            if (deathCount < oldDeathCount)
+            {
+                playerData[getNewScore()] = deathCount; // dict[key] = value; 
+            }
+        }
     }
 }
