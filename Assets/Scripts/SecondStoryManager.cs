@@ -1,6 +1,7 @@
 // Ethan Le (4/4/2026):
 using UnityEngine;
 using UnityEngine.InputSystem; 
+using UnityEngine.UI;
 using TMPro;
 
 /** 
@@ -9,6 +10,7 @@ using TMPro;
 public class SecondStoryController : MonoBehaviour
 {
     public TextMeshProUGUI storyText;
+    public Button skipButton; 
 
     [TextArea(3, 5)]
     public string[] storyLines; // Array -- Fill in Unity Inspector with the beginning narration.
@@ -17,6 +19,11 @@ public class SecondStoryController : MonoBehaviour
 
     void Start()
     {
+        if (skipButton != null) // Ensure the Button component is assigned in Unity Inspector. 
+        {
+            skipButton.onClick.AddListener(SkipEnding); // Add listener to skip ending when button is pressed. 
+        }
+
         ShowCurrentLine(); // Game starts at index 0 in the sequence of narration lines. 
     }
 
@@ -32,7 +39,7 @@ public class SecondStoryController : MonoBehaviour
         else if ((Keyboard.current.anyKey.wasPressedThisFrame ||
             Mouse.current.leftButton.wasPressedThisFrame) && GameManager.instance.midStoryPlayed == true)
         {
-            Debug.Log("Going to Title!"); 
+            //Debug.Log("Going to Title!"); 
             GameManager.instance.returnToTitle(); // Return to the Title Screen once player is done with the story. 
         }
     }
@@ -62,5 +69,13 @@ public class SecondStoryController : MonoBehaviour
 
             GameManager.instance.midStoryPlayed = true; // Set flag to true so midway story sequence does not play again upon dying. 
         }
+    }
+
+    void SkipEnding()
+    {
+        storyText.text = "Your final score: " + GameManager.instance.getNewScore() + "\nYour death count: " + GameManager.instance.getDeathCount()
+                + "\n\nPress any key or mouse click to return to the Title Screen."; 
+
+        GameManager.instance.midStoryPlayed = true; // Set flag to true so midway story sequence does not play again upon dying. 
     }
 }

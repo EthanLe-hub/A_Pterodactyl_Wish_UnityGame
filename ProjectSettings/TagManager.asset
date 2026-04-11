@@ -13,6 +13,7 @@ TagManager:
   - Medium Gold Coin
   - Small Gold Coin
   - Level 1 Completed
+  - Projectile
   layers:
   - Default
   - TransparentFX

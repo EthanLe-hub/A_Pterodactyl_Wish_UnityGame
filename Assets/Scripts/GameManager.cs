@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     public Button scoreboardButton; 
     public Button closeCreditsButton; 
     public Button closeScoreboardButton;
+    public Button exitButton; 
     public GameObject creditsPage; 
     public GameObject scoreboardPage; 
     public TextMeshProUGUI scoreText; 
@@ -108,7 +109,7 @@ public class GameManager : MonoBehaviour
     **/ 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (!hasInitialized)
+        if (!hasInitialized) // First load is when the game itself is loaded, so do NOT perform retrieval logic yet (game is still brand new). 
         {
             hasInitialized = true; // Now game will use this function when player dies.
             return; // To skip the first load. 
@@ -122,7 +123,7 @@ public class GameManager : MonoBehaviour
         playerDialogueCanvas = GameObject.Find("PlayerDialogueCanvas");
         firstGameLevel = GameObject.Find("FirstLevel");
         titleScreen = GameObject.Find("TitleScreen"); 
-        scoreManager = GameObject.FindObjectOfType<ScoreManager>(); 
+        scoreManager = GameObject.FindFirstObjectByType<ScoreManager>(); 
 
         // Re-find title components and buttons and re-attach listeners after game reloads (like after the player dies):
         playButton = GameObject.Find("PlayButton").GetComponent<Button>(); 
@@ -132,6 +133,7 @@ public class GameManager : MonoBehaviour
         scoreboardPage = GameObject.Find("ScoreboardPage"); 
         closeCreditsButton = GameObject.Find("CloseCreditsButton").GetComponent<Button>(); 
         closeScoreboardButton = GameObject.Find("CloseScoreboardButton").GetComponent<Button>(); 
+        exitButton = GameObject.Find("ExitButton").GetComponent<Button>();
         GameObject scoreGameObject = GameObject.Find("ScoreText"); 
         scoreText = scoreGameObject.GetComponent<TextMeshProUGUI>(); 
 
@@ -139,7 +141,12 @@ public class GameManager : MonoBehaviour
             
         // Restart game flow w/o the intro narration (taken care of by "StartGame()" function): 
         titleScreen.SetActive(false); // Do not return to title screen. 
-        // No story sequences, just open up scoreboard and player speed and the level itself: 
+        gameScene.SetActive(false); // Do not show level yet.
+        
+        // Hide the actual player dialogue visuals until player touches dialogue trigger zone:
+        playerDialogueCanvas.SetActive(false); // Prevents player dialogue from accidentally triggering too early. 
+
+        // No story sequences opened here, just open up scoreboard and player speed and the level itself: 
         if (storySequence != null)
         {
             storySequence.SetActive(false); 
@@ -149,7 +156,17 @@ public class GameManager : MonoBehaviour
         {
             secStorySequence.SetActive(false); 
         }
-        StartGame(); // Skips beginning story narration. 
+
+        if (!introPlayed) // Play intro if it has not yet played in this playthrough. 
+        {
+            introPlayed = true; 
+            storySequence.SetActive(true); 
+        }
+
+        else
+        {
+            StartGame(); // Skips beginning story narration. 
+        }
     }
 
     void Start() // Only runs ONCE the whole game (when you first start the game): 
@@ -179,11 +196,11 @@ public class GameManager : MonoBehaviour
         scoreboardButton.onClick.RemoveAllListeners(); 
         closeCreditsButton.onClick.RemoveAllListeners(); 
         closeScoreboardButton.onClick.RemoveAllListeners(); 
+        exitButton.onClick.RemoveAllListeners(); 
 
         // Attach onClick listeners to Title Screen buttons:
         playButton.onClick.AddListener(() => {
-            titleScreen.SetActive(false);
-            storySequence.SetActive(true); // When player clicks Play button, commence story sequence. 
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name); // When player clicks Play button, load the gameplay.
         }); 
         creditsButton.onClick.AddListener(() => creditsPage.SetActive(true)); // Show Credits page if Credits button is clicked. 
         scoreboardButton.onClick.AddListener(() => {
@@ -191,7 +208,8 @@ public class GameManager : MonoBehaviour
             displayHighScores(); 
         }); // Show Scoreboard page with the high scores if Scoreboard button is clicked. 
         closeCreditsButton.onClick.AddListener(() => creditsPage.SetActive(false)); // Close Credits page if Close Credits button is clicked. 
-        closeScoreboardButton.onClick.AddListener(() => scoreboardPage.SetActive(false)); // Close Scoreboard page if Close Scoreboard button is clicked. 
+        closeScoreboardButton.onClick.AddListener(() => scoreboardPage.SetActive(false)); // Close Scoreboard page if Close Scoreboard button is clicked.
+        exitButton.onClick.AddListener(ExitPlay); // Exit game if player clicks Exit button during a playthrough.  
     }
 
     /**
@@ -210,6 +228,7 @@ public class GameManager : MonoBehaviour
             secStorySequence.SetActive(false); 
         }
         
+        playerDialogueCanvas.SetActive(true); // Re-activate the GameObject so player dialogue can now trigger. 
         gameScene.SetActive(true); 
         SetActiveLevel(); // First level shows. 
 
@@ -217,10 +236,10 @@ public class GameManager : MonoBehaviour
         //scoreManager.CreateUI(); // Initialize text for score and player speed. 
 
         // Hide the actual player dialogue visuals until player touches dialogue trigger zone:
-        PlayerDialogueManager dm = playerDialogueCanvas.GetComponent<PlayerDialogueManager>();
-        if(dm != null)
+        PlayerDialogueManager dialogueManager = playerDialogueCanvas.GetComponent<PlayerDialogueManager>();
+        if(dialogueManager != null)
         {
-            dm.HideAllUI(); 
+            dialogueManager.HideAllUI(); 
         }
     }
 
@@ -354,6 +373,14 @@ public class GameManager : MonoBehaviour
             scoreText.text = newString.ToString(); // Set the newly built string to be displayed. 
         }
 
-        Debug.Log("Successful Score Display!"); 
+        //Debug.Log("Successful Score Display!"); 
+    }
+
+    /**
+     * Function to let player exit game during a playthrough.
+    **/
+    public void ExitPlay()
+    {
+        returnToTitle(); // Return to the Title Screen if player clicks Exit button. 
     }
 }

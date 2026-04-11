@@ -63,7 +63,7 @@ public class Player : MonoBehaviour
         }
 
         // Spikes and Grinder Hazards have Polygon Collider 2D component, and if the player touches it, the player dies. 
-        if (collision.gameObject.CompareTag("Spike") || collision.gameObject.CompareTag("Hazard")) // For when the player comes into contact with a GameObject with the tag "Spike" or "Hazard". 
+        if (collision.gameObject.CompareTag("Spike") || collision.gameObject.CompareTag("Hazard") || collision.gameObject.CompareTag("Projectile")) // For when the player comes into contact with a GameObject with the tag "Spike" or "Hazard". 
         {
             isDead = true; // Player is now dead. 
 
@@ -163,13 +163,13 @@ public class Player : MonoBehaviour
      * RIGHT arrow key: face right
      * UP arrow key: fly upward
      * DOWN arrow key OR releasing UP: fall downward
-     */
+     */ 
 
     public void OnMove(InputValue value) // Using new Input System:
     {
         moveDirection = value.Get<Vector2>(); // Get movement direction from the Input System.
 
-        Debug.Log(moveDirection);
+        //Debug.Log(moveDirection);
 
         // Flip sprite based on horizontal input
         if (moveDirection.x < 0) // Left arrow key pressed.
